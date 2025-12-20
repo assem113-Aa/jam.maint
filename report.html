@@ -52,11 +52,6 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
         <div class="ph" id="vidPh"><i class="fa-solid fa-video"></i> VIDEO</div>
       </div>
 
-      <div class="qrBadge" id="qrBtn">
-        <svg viewBox="0 0 24 24"><path d="M3 3h8v8H3zM13 3h8v8h-8zM3 13h8v8H3zM13 13h2v2h-2z"/></svg>
-      </div>
-    </div>
-
     <div class="fault">
       <label>FAULT DESCRIPTION</label>
       <textarea id="fault"></textarea>
@@ -110,13 +105,6 @@ if(data.videoDataUrl){
  vid.style.display='block';
  vidPh.style.display='none';
 }
-
-const qrBtn=document.getElementById('qrBtn');
-if(data.qrImageDataUrl){
- qrBtn.classList.add('has');
- qrBtn.onclick=()=>openImg(data.qrImageDataUrl);
-}
-
 function openImg(src){
  document.getElementById('modalImg').src=src;
  document.getElementById('modalImg').style.display='block';
