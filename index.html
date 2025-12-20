@@ -1189,13 +1189,7 @@ vidInput.onchange = (e) => {
       videoDataUrl: lastVideoDataUrl || ''
     };
   }
-
-  confirmBtn.addEventListener('click', () => {
-    try{
-      sessionStorage.setItem('assem_report_data', JSON.stringify(collectFormData()));
-    }catch(e){}
-    window.location.href = 'report.html';
-  });
+  
 })();
 
 </script>
