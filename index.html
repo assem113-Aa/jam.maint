@@ -1157,7 +1157,16 @@ vidInput.onchange = (e) => {
 (function(){
   const confirmBtn = document.getElementById('confirmBtn');
   if(!confirmBtn) return;
+confirmBtn.addEventListener('click', function () {
+  const data = collectFormData();
 
+  // (اختياري) تخزين البيانات
+  localStorage.setItem('reportData', JSON.stringify(data));
+
+  // ✅ الانتقال لصفحة التقرير
+  window.location.href = 'report
+  .html'; // أو report.html
+});
   function collectFormData(){
     const getVal = (id) => (document.getElementById(id)?.value || '');
     return {
