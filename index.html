@@ -1153,20 +1153,20 @@ vidInput.onchange = (e) => {
   video.style.display = 'block';
 };
 
-/* === CONFIRM: go to read-only report page with same data === */
-(function(){
+  /* === CONFIRM: go to read-only report page with same data === */
+(function () {
   const confirmBtn = document.getElementById('confirmBtn');
-  if(!confirmBtn) return;
-confirmBtn.addEventListener('click', function () {
-  const data = collectFormData();
+  if (!confirmBtn) return;
 
-  // (اختياري) تخزين البيانات
-  localStorage.setItem('reportData', JSON.stringify(data));
+  confirmBtn.addEventListener('click', function () {
+    const data = collectFormData();
 
-  // ✅ الانتقال لصفحة التقرير
-  window.location.href = 'report
-  .html'; // أو report.html
-});
+    // (اختياري) تخزين البيانات
+    localStorage.setItem('reportData', JSON.stringify(data));
+
+    // ✅ الانتقال لصفحة التقرير
+    window.location.href = 'report.html';
+  });
   function collectFormData(){
     const getVal = (id) => (document.getElementById(id)?.value || '');
     return {
