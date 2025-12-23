@@ -1127,16 +1127,16 @@ vidInput.onchange = async (e) => {
   
   // keep previously selected image/QR (independent from video)
   lastVideoName = (file && file.name) ? file.name : '';
-  try{
-    // ✅ ارفع الفيديو وخزن اللينك
+  lastVideoName = (file && file.name) ? file.name : '';
+
 try{
+  // ✅ ارفع الفيديو وخزن اللينك
   lastVideoUrl = await uploadVideoToSupabase(file);
   console.log("Video URL:", lastVideoUrl);
 }catch(err){
   alert("Video upload failed: " + (err?.message || "unknown error"));
   return;
   }
-  }catch(e){}
 // لو كان فيه تعديل/قص للصورة، اقفله
   if(cropper){ cropper.destroy(); cropper = null; }
   isEditMode = false;
