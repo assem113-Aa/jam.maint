@@ -1128,9 +1128,14 @@ vidInput.onchange = (e) => {
   // keep previously selected image/QR (independent from video)
   lastVideoName = (file && file.name) ? file.name : '';
   try{
-    const vr = new FileReader();
-    vr.onload = () => { lastVideoDataUrl = vr.result || ''; };
-    vr.readAsDataURL(file);
+    // ✅ ارفع الفيديو وخزن اللينك
+try{
+  lastVideoUrl = await uploadVideoToSupabase(file);
+  console.log("Video URL:", lastVideoUrl);
+}catch(err){
+  alert("Video upload failed: " + (err?.message || "unknown error"));
+  return;
+  }
   }catch(e){}
 // لو كان فيه تعديل/قص للصورة، اقفله
   if(cropper){ cropper.destroy(); cropper = null; }
