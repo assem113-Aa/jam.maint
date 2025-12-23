@@ -19,9 +19,6 @@ h1{margin:0;color:#123a62}
 .imgBox{border:2px dashed #cfdceb;border-radius:16px;overflow:hidden;background:#fff;min-height:220px;display:flex;align-items:center;justify-content:center;position:relative}
 .imgBox img, .imgBox video{width:100%;height:100%;object-fit:contain;display:none}
 .ph{color:#2b4a66;font-weight:900}
-.qrBadge{position:absolute;left:10px;bottom:10px;width:54px;height:54px;border-radius:14px;border:2px solid #cfdceb;background:#fff;box-shadow:0 10px 20px rgba(0,0,0,.14);display:none;align-items:center;justify-content:center;cursor:pointer}
-.qrBadge svg{width:24px;height:24px;fill:#0b5ea8}
-.qrBadge.has{display:flex}
 .fault{margin-top:14px}
 label{display:block;font-size:12px;font-weight:900;color:#2b4a66;margin-bottom:6px}
 textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:14px;border:1px solid #cfdceb;font-weight:700}
@@ -32,6 +29,7 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
 #modal img,#modal video{width:100vw;height:100vh;object-fit:contain;background:#fff}
 </style>
 </head>
+
 <body>
 <div class="card">
   <div class="header">
@@ -48,9 +46,10 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
       </div>
 
       <div class="imgBox">
-        <video id="vid" controls playsinline></video>
+        <video id="vid" controls playsinline preload="metadata"></video>
         <div class="ph" id="vidPh"><i class="fa-solid fa-video"></i> VIDEO</div>
       </div>
+    </div>
 
     <div class="fault">
       <label>FAULT DESCRIPTION</label>
@@ -82,79 +81,72 @@ const fields = [
  ["DEVICE STATUS","deviceStatus"]
 ];
 
-const fieldsEl=document.getElementById('fields');
+const fieldsEl = document.getElementById('fields');
 fields.forEach(([k,v])=>{
- const d=document.createElement('div');
- d.className='field';
- d.innerHTML=`<div class="k">${k}</div><div class="v">${data[v]||"-"}</div>`;
- fieldsEl.appendChild(d);
+  const d=document.createElement('div');
+  d.className='field';
+  d.innerHTML=`<div class="k">${k}</div><div class="v">${data[v]||"-"}</div>`;
+  fieldsEl.appendChild(d);
 });
 
-const mainImg=document.getElementById('mainImg');
-const imgPh=document.getElementById('imgPh');
-if(data.imageDataUrl){
- mainImg.src=data.imageDataUrl;
- mainImg.style.display='block';
- imgPh.style.display='none';
+const mainImg = document.getElementById('mainImg');
+const imgPh = document.getElementById('imgPh');
+const vid = document.getElementById('vid');
+const vidPh = document.getElementById('vidPh');
+
+// 1) أولاً: لو فيه بيانات جاية من الفورم (sessionStorage) استخدمها
+if (data.imageDataUrl){
+  mainImg.src = data.imageDataUrl;
+  mainImg.style.display='block';
+  imgPh.style.display='none';
+}
+if (data.videoDataUrl){
+  vid.src = data.videoDataUrl;
+  vid.style.display='block';
+  vidPh.style.display='none';
 }
 
-const vid=document.getElementById('vid');
-const vidPh=document.getElementById('vidPh');
-if(data.videoDataUrl){
- vid.src=data.videoDataUrl;
- vid.style.display='block';
- vidPh.style.display='none';
+// 2) ثانيًا: لو مفيش بيانات جاية من الفورم، استخدم روابط Supabase الثابتة (اختبار)
+if (!data.imageDataUrl) {
+  mainImg.src = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
+  mainImg.style.display='block';
+  imgPh.style.display='none';
 }
+if (!data.videoDataUrl) {
+  vid.src = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4";
+  vid.style.display='block';
+  vidPh.style.display='none';
+}
+
 function openImg(src){
- document.getElementById('modalImg').src=src;
- document.getElementById('modalImg').style.display='block';
- document.getElementById('modal').style.display='flex';
+  document.getElementById('modalImg').src=src;
+  document.getElementById('modalImg').style.display='block';
+  document.getElementById('modal').style.display='flex';
 }
 function openVid(src){
- document.getElementById('modalVid').src=src;
- document.getElementById('modalVid').style.display='block';
- document.getElementById('modal').style.display='flex';
+  document.getElementById('modalVid').src=src;
+  document.getElementById('modalVid').style.display='block';
+  document.getElementById('modal').style.display='flex';
 }
+
 document.getElementById('modal').onclick=()=>{
- document.getElementById('modal').style.display='none';
- document.getElementById('modalImg').style.display='none';
- document.getElementById('modalVid').style.display='none';
+  document.getElementById('modal').style.display='none';
+  document.getElementById('modalImg').style.display='none';
+  document.getElementById('modalVid').style.display='none';
 };
+
+// اختياري: تكبير عند الضغط
+mainImg.addEventListener('click', ()=> openImg(mainImg.src));
+vid.addEventListener('click', ()=> openVid(vid.src));
 
 document.getElementById('sendBtn').onclick=()=>{
- const fault=document.getElementById('fault').value||"-";
- let msg="ELECTRIC.ASSEM REPORT\n";
- fields.forEach(([k,v])=>msg+=`${k}: ${data[v]||"-"}\n`);
- msg+="FAULT DESCRIPTION:\n"+fault;
- window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(msg));
+  const fault=document.getElementById('fault').value||"-";
+  let msg="ELECTRIC.ASSEM REPORT\n";
+  fields.forEach(([k,v])=>msg+=`${k}: ${data[v]||"-"}\n`);
+  msg+="FAULT DESCRIPTION:\n"+fault;
+  window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(msg));
 };
 </script>
-  <!-- كودك القديم فوق --> 
 
-<img id="repImg" style="width:100%;max-width:500px" />
-<video id="repVid" controls playsinline style="width:100%;max-width:900px"></video> 
-
-<script>
-  const IMAGE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
-  const VIDEO_URL = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4"; 
-
-  document.getElementById("repImg").src = IMAGE_URL;
-  document.getElementById("repVid").src = VIDEO_URL;
-</script> 
-
-</body>
-</html>
-
-<video id="repVid" controls playsinline preload="metadata"
-       style="width:100%;max-width:900px"></video>
-<script>
-  window.addEventListener("DOMContentLoaded", () => {
-    document.getElementById("repImg").src =
-      "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
-
-    document.getElementById("repVid").src =
-      "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4";
-  });
-</script>
 </body>
 </html>
