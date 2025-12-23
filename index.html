@@ -1193,5 +1193,15 @@ vidInput.onchange = (e) => {
 })();
 
 </script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ"; 
+
+  const supabase = supabaseJs.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+</script>
 </body>
 </html>
