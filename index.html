@@ -1158,15 +1158,26 @@ vidInput.onchange = (e) => {
   const confirmBtn = document.getElementById('confirmBtn');
   if (!confirmBtn) return;
 
-  confirmBtn.addEventListener('click', function () {
-    const data = collectFormData();
+  confirmBtn.addEventListener('click', async function () {
 
-    // (اختياري) تخزين البيانات
-    sessionStorage.setItem('assem_report_data', JSON.stringify(data));
+  if (video && video.src && video.style.display === 'block' && !lastVideoDataUrl) {
+    confirmBtn.disabled = true;
+    const oldHtml = confirmBtn.innerHTML;
+    confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CONFIRM';
 
-    // ✅ الانتقال لصفحة التقرير
-    window.location.href = 'report.html';
-  });
+    const t0 = Date.now();
+    while (!lastVideoDataUrl && (Date.now() - t0) < 8000) {
+      await new Promise(r => setTimeout(r, 120));
+    }
+
+    confirmBtn.disabled = false;
+    confirmBtn.innerHTML = oldHtml;
+  }
+
+  const data = collectFormData();
+  sessionStorage.setItem('assem_report_data', JSON.stringify(data));
+  window.location.href = 'report.html';
+});
   function collectFormData(){
     const getVal = (id) => (document.getElementById(id)?.value || '');
     return {
