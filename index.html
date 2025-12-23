@@ -1171,10 +1171,10 @@ try{
     confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CONFIRM';
 
     const t0 = Date.now();
-    while (!lastVideoDataUrl && (Date.now() - t0) < 8000) {
-      await new Promise(r => setTimeout(r, 120));
-    }
-
+    
+while (!lastVideoUrl && (Date.now() - t0) < 15000) {
+  await new Promise(r => setTimeout(r, 120));
+  }
     confirmBtn.disabled = false;
     confirmBtn.innerHTML = oldHtml;
   }
