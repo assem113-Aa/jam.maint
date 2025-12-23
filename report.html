@@ -129,5 +129,32 @@ document.getElementById('sendBtn').onclick=()=>{
  window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(msg));
 };
 </script>
+  <!-- كودك القديم فوق --> 
+
+<img id="repImg" style="width:100%;max-width:500px" />
+<video id="repVid" controls playsinline style="width:100%;max-width:900px"></video> 
+
+<script>
+  const IMAGE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
+  const VIDEO_URL = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4"; 
+
+  document.getElementById("repImg").src = IMAGE_URL;
+  document.getElementById("repVid").src = VIDEO_URL;
+</script> 
+
+</body>
+</html>
+
+<video id="repVid" controls playsinline preload="metadata"
+       style="width:100%;max-width:900px"></video>
+<script>
+  window.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("repImg").src =
+      "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
+
+    document.getElementById("repVid").src =
+      "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4";
+  });
+</script>
 </body>
 </html>
