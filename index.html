@@ -1197,11 +1197,20 @@ vidInput.onchange = (e) => {
 <script>
   const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
   const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ"; 
+<!-- Supabase Client -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+  const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ";
+  const SUPABASE_BUCKET = "uploads"; 
 
-  const supabase = supabaseJs.createClient(
+  // ✅ Browser-safe Supabase v2
+  const supabaseClient = window.supabase.createClient(
     SUPABASE_URL,
     SUPABASE_KEY
   );
+</script>
+        ;
 </script>
 </body>
 </html>
