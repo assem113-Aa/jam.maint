@@ -18,7 +18,7 @@ h1{margin:0;color:#123a62}
 .media-wrap{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
 .imgBox{border:2px dashed #cfdceb;border-radius:16px;overflow:hidden;background:#fff;min-height:220px;display:flex;align-items:center;justify-content:center;position:relative}
 .imgBox img, .imgBox video{width:100%;height:100%;object-fit:contain;display:none}
-.ph{color:#2b4a66;font-weight:900}
+.ph{color:#2b4a66;font-weight:900;text-align:center;padding:14px}
 .fault{margin-top:14px}
 label{display:block;font-size:12px;font-weight:900;color:#2b4a66;margin-bottom:6px}
 textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:14px;border:1px solid #cfdceb;font-weight:700}
@@ -40,14 +40,22 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
     <div class="grid" id="fields"></div>
 
     <div class="media-wrap">
+      <!-- IMAGE -->
       <div class="imgBox">
-        <img id="mainImg">
+        <img id="mainImg" alt="Report Image">
         <div class="ph" id="imgPh"><i class="fa-solid fa-image"></i> IMAGE</div>
       </div>
 
+      <!-- VIDEO -->
       <div class="imgBox">
         <video id="vid" controls playsinline preload="metadata"></video>
         <div class="ph" id="vidPh"><i class="fa-solid fa-video"></i> VIDEO</div>
+      </div>
+
+      <!-- QR -->
+      <div class="imgBox" style="grid-column:1 / -1;">
+        <img id="qrImg" alt="QR">
+        <div class="ph" id="qrPh"><i class="fa-solid fa-qrcode"></i> QR</div>
       </div>
     </div>
 
@@ -68,10 +76,13 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
   <video id="modalVid" controls style="display:none"></video>
 </div>
 
+<!-- hidden picker -->
+<input id="mediaInput" type="file" accept="image/*,video/*" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
+
 <script>
 const WHATSAPP_NUMBER = "201274693883";
 
-const data = JSON.parse(sessionStorage.getItem('assem_report_data')||"{}");
+const data = JSON.parse(sessionStorage.getItem('assem_report_data') || "{}");
 
 const fields = [
  ["CUSTOMER","customer"],["RIG","rig"],["SYSTEM","system"],["DEVICE ID","deviceId"],
@@ -85,7 +96,7 @@ const fieldsEl = document.getElementById('fields');
 fields.forEach(([k,v])=>{
   const d=document.createElement('div');
   d.className='field';
-  d.innerHTML=`<div class="k">${k}</div><div class="v">${data[v]||"-"}</div>`;
+  d.innerHTML=`<div class="k">${k}</div><div class="v">${(data[v] || "-")}</div>`;
   fieldsEl.appendChild(d);
 });
 
@@ -93,52 +104,80 @@ const mainImg = document.getElementById('mainImg');
 const imgPh = document.getElementById('imgPh');
 const vid = document.getElementById('vid');
 const vidPh = document.getElementById('vidPh');
+const qrImg = document.getElementById('qrImg');
+const qrPh = document.getElementById('qrPh');
 
-// 1) أولاً: لو فيه بيانات جاية من الفورم (sessionStorage) استخدمها
-if (data.imageDataUrl){
-  mainImg.src = data.imageDataUrl;
-  mainImg.style.display='block';
-  imgPh.style.display='none';
+function showImg(el, phEl, src){
+  if(!src) return;
+  el.src = src;
+  el.style.display = 'block';
+  phEl.style.display = 'none';
 }
-if (data.videoDataUrl){
-  vid.src = data.videoDataUrl;
-  vid.style.display='block';
-  vidPh.style.display='none';
-}
-
-// 2) ثانيًا: لو مفيش بيانات جاية من الفورم، استخدم روابط Supabase الثابتة (اختبار)
-if (!data.imageDataUrl) {
-  mainImg.src = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/1766111884238.jpg";
-  mainImg.style.display='block';
-  imgPh.style.display='none';
-}
-if (!data.videoDataUrl) {
-  vid.src = "https://oescgxsgmfpixkfrsmju.supabase.co/storage/v1/object/public/uploads/VID-20251219-WA0000.mp4";
-  vid.style.display='block';
-  vidPh.style.display='none';
+function showVid(el, phEl, src){
+  if(!src) return;
+  el.src = src;
+  el.style.display = 'block';
+  phEl.style.display = 'none';
 }
 
+showImg(mainImg, imgPh, data.imageDataUrl || "");
+showVid(vid, vidPh, data.videoDataUrl || "");
+showImg(qrImg, qrPh, data.qrImageDataUrl || "");
+
+/* fullscreen modal */
 function openImg(src){
-  document.getElementById('modalImg').src=src;
-  document.getElementById('modalImg').style.display='block';
-  document.getElementById('modal').style.display='flex';
+  const m=document.getElementById('modal');
+  const mi=document.getElementById('modalImg');
+  const mv=document.getElementById('modalVid');
+  mv.pause?.();
+  mv.removeAttribute('src');
+  mv.style.display='none';
+  mi.src=src;
+  mi.style.display='block';
+  m.style.display='flex';
 }
 function openVid(src){
-  document.getElementById('modalVid').src=src;
-  document.getElementById('modalVid').style.display='block';
-  document.getElementById('modal').style.display='flex';
+  const m=document.getElementById('modal');
+  const mi=document.getElementById('modalImg');
+  const mv=document.getElementById('modalVid');
+  mi.removeAttribute('src');
+  mi.style.display='none';
+  mv.src=src;
+  mv.style.display='block';
+  m.style.display='flex';
 }
-
 document.getElementById('modal').onclick=()=>{
-  document.getElementById('modal').style.display='none';
-  document.getElementById('modalImg').style.display='none';
-  document.getElementById('modalVid').style.display='none';
+  const m=document.getElementById('modal');
+  const mi=document.getElementById('modalImg');
+  const mv=document.getElementById('modalVid');
+  m.style.display='none';
+  mi.style.display='none';
+  mv.style.display='none';
+  mv.pause?.();
 };
 
-// اختياري: تكبير عند الضغط
-mainImg.addEventListener('click', ()=> openImg(mainImg.src));
-vid.addEventListener('click', ()=> openVid(vid.src));
+mainImg.addEventListener('click', ()=> mainImg.src && openImg(mainImg.src));
+qrImg.addEventListener('click', ()=> qrImg.src && openImg(qrImg.src));
+vid.addEventListener('click', ()=> vid.src && openVid(vid.src));
 
+/* Upload button */
+const mediaBtn = document.getElementById('mediaBtn');
+const mediaInput = document.getElementById('mediaInput');
+mediaBtn.onclick = () => { mediaInput.value=''; mediaInput.click(); };
+
+mediaInput.onchange = (e) => {
+  const file = e.target.files?.[0];
+  if(!file) return;
+  const url = URL.createObjectURL(file);
+
+  if(file.type.startsWith('image/')){
+    showImg(mainImg, imgPh, url);
+  }else if(file.type.startsWith('video/')){
+    showVid(vid, vidPh, url);
+  }
+};
+
+/* SEND WhatsApp */
 document.getElementById('sendBtn').onclick=()=>{
   const fault=document.getElementById('fault').value||"-";
   let msg="ELECTRIC.ASSEM REPORT\n";
