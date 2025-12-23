@@ -1193,24 +1193,22 @@ vidInput.onchange = (e) => {
 })();
 
 </script>
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ"; 
-<!-- Supabase Client -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script>
-  const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
-  const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ";
-  const SUPABASE_BUCKET = "uploads"; 
 
-  // ✅ Browser-safe Supabase v2
-  const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+<!-- ✅ Supabase v2 (مرة واحدة فقط) -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+  // ✅ إعدادات Supabase
+  const SUPABASE_URL = "https://oescgxsgmfpixkfrsmju.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_BwCexQ9vm4kEX4RmBvqvLQ_0F8KMIqJ";
+  const SUPABASE_BUCKET = "uploads";
+
+  // ✅ إنشاء الـ client
+  const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  // ✅ (اختياري) للتأكد إن المكتبة اشتغلت
+  console.log("Supabase ready:", !!supabaseClient);
 </script>
-        ;
-</script>
+
 </body>
 </html>
