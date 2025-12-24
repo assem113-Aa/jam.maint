@@ -83,7 +83,14 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
 const WHATSAPP_NUMBER = "201274693883";
 
 const data = JSON.parse(sessionStorage.getItem('assem_report_data') || "{}");
+const vid = document.getElementById('vid');
+const vidPh = document.getElementById('vidPh');
 
+if (data.videoUrl) {
+  vid.src = data.videoUrl;
+  vid.style.display = 'block';
+  vidPh.style.display = 'none';
+  }
 const fields = [
  ["CUSTOMER","customer"],["RIG","rig"],["SYSTEM","system"],["DEVICE ID","deviceId"],
  ["THREAD TYPE","threadType"],["SIZE","threadSize"],
