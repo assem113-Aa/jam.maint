@@ -1165,19 +1165,7 @@ try{
 
   confirmBtn.addEventListener('click', async function () {
 
-  if (video && video.src && video.style.display === 'block' && !lastVideoDataUrl) {
-    confirmBtn.disabled = true;
-    const oldHtml = confirmBtn.innerHTML;
-    confirmBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> CONFIRM';
-
-    const t0 = Date.now();
-    
-while (!lastVideoUrl && (Date.now() - t0) < 15000) {
-  await new Promise(r => setTimeout(r, 120));
-  }
-    confirmBtn.disabled = false;
-    confirmBtn.innerHTML = oldHtml;
-  }
+  
 
   const data = collectFormData();
   sessionStorage.setItem('assem_report_data', JSON.stringify(data));
