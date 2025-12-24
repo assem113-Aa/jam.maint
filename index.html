@@ -1225,6 +1225,36 @@ while (!lastVideoUrl && (Date.now() - t0) < 15000) {
   // ✅ (اختياري) للتأكد إن المكتبة اشتغلت
   console.log("Supabase ready:", !!supabaseClient);
 </script>
+<script>
+async function uploadVideoToSupabase(file){
+  if(!window.supabase || !window.supabase.createClient){
+    throw new Error("Supabase library not loaded");
+  }
+  if(typeof supabaseClient === "undefined"){
+    throw new Error("supabaseClient not defined");
+  }
 
+  const ext = (file.name.split('.').pop() || 'mp4').toLowerCase();
+  const filePath = `videos/${Date.now()}_${Math.random().toString(16).slice(2)}.${ext}`;
+
+  const { error } = await supabaseClient
+    .storage
+    .from("uploads")
+    .upload(filePath, file, {
+      cacheControl: "3600",
+      upsert: false,
+      contentType: file.type || "video/mp4"
+    });
+
+  if(error) throw error;
+
+  const { data } = supabaseClient
+    .storage
+    .from("uploads")
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
+}
+</script>
 </body>
 </html>
