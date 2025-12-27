@@ -51,17 +51,11 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
         <video id="vid" controls playsinline preload="metadata"></video>
         <div class="ph" id="vidPh"><i class="fa-solid fa-video"></i> VIDEO</div>
       </div>
-
-      <!-- QR -->
-      <div class="imgBox" style="grid-column:1 / -1;">
-        <img id="qrImg" alt="QR">
-        <div class="ph" id="qrPh"><i class="fa-solid fa-qrcode"></i> QR</div>
-      </div>
     </div>
 
     <div class="fault">
       <label>FAULT DESCRIPTION</label>
-      <textarea id="fault"></textarea>
+      <textarea id="fault" placeholder="Write fault description here..."></textarea>
 
       <div class="row">
         <button class="tool" id="mediaBtn"><i class="fa-solid fa-upload"></i> Upload Photo/Video</button>
@@ -80,17 +74,13 @@ textarea{width:100%;min-height:120px;resize:vertical;padding:12px;border-radius:
 <input id="mediaInput" type="file" accept="image/*,video/*" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0" />
 
 <script>
+/* ✅ WhatsApp number: 01274693883 => international */
 const WHATSAPP_NUMBER = "201274693883";
 
-const data = JSON.parse(sessionStorage.getItem('assem_report_data') || "{}");
-const vid = document.getElementById('vid');
-const vidPh = document.getElementById('vidPh');
+/* ✅ Google Apps Script Web App */
+const API_URL = "https://script.google.com/macros/s/AKfycbxK9K4ZEmasLuDGu2_oXTqKxZc1102qJxEo8WR2Asib4R7OyWvlf7l-X_bJ7e8spHwB/exec";
 
-if (data.videoUrl) {
-  vid.src = data.videoUrl;
-  vid.style.display = 'block';
-  vidPh.style.display = 'none';
-  }
+/* Fields to render */
 const fields = [
  ["CUSTOMER","customer"],["RIG","rig"],["SYSTEM","system"],["DEVICE ID","deviceId"],
  ["THREAD TYPE","threadType"],["SIZE","threadSize"],
@@ -100,36 +90,38 @@ const fields = [
 ];
 
 const fieldsEl = document.getElementById('fields');
-fields.forEach(([k,v])=>{
-  const d=document.createElement('div');
-  d.className='field';
-  d.innerHTML=`<div class="k">${k}</div><div class="v">${(data[v] || "-")}</div>`;
-  fieldsEl.appendChild(d);
-});
 
 const mainImg = document.getElementById('mainImg');
 const imgPh = document.getElementById('imgPh');
 const vid = document.getElementById('vid');
 const vidPh = document.getElementById('vidPh');
-const qrImg = document.getElementById('qrImg');
-const qrPh = document.getElementById('qrPh');
+
+function clearFields(){
+  fieldsEl.innerHTML = "";
+}
+
+function renderFields(data){
+  clearFields();
+  fields.forEach(([k,v])=>{
+    const d=document.createElement('div');
+    d.className='field';
+    d.innerHTML=`<div class="k">${k}</div><div class="v">${(data?.[v] || "-")}</div>`;
+    fieldsEl.appendChild(d);
+  });
+}
 
 function showImg(el, phEl, src){
-  if(!src) return;
+  if(!src){ el.style.display='none'; phEl.style.display='block'; return; }
   el.src = src;
   el.style.display = 'block';
   phEl.style.display = 'none';
 }
 function showVid(el, phEl, src){
-  if(!src) return;
+  if(!src){ el.style.display='none'; phEl.style.display='block'; return; }
   el.src = src;
   el.style.display = 'block';
   phEl.style.display = 'none';
 }
-
-showImg(mainImg, imgPh, data.imageDataUrl || "");
-showVid(vid, vidPh, data.videoUrl || "");
-showImg(qrImg, qrPh, data.qrImageDataUrl || "");
 
 /* fullscreen modal */
 function openImg(src){
@@ -164,10 +156,9 @@ document.getElementById('modal').onclick=()=>{
 };
 
 mainImg.addEventListener('click', ()=> mainImg.src && openImg(mainImg.src));
-qrImg.addEventListener('click', ()=> qrImg.src && openImg(qrImg.src));
 vid.addEventListener('click', ()=> vid.src && openVid(vid.src));
 
-/* Upload button */
+/* Upload button (optional - changes preview only, not saved to sheets) */
 const mediaBtn = document.getElementById('mediaBtn');
 const mediaInput = document.getElementById('mediaInput');
 mediaBtn.onclick = () => { mediaInput.value=''; mediaInput.click(); };
@@ -187,37 +178,61 @@ mediaInput.onchange = (e) => {
 /* SEND WhatsApp */
 document.getElementById('sendBtn').onclick=()=>{
   const fault=document.getElementById('fault').value||"-";
+  const data = window.__REPORT_DATA__ || JSON.parse(sessionStorage.getItem('assem_report_data') || "{}");
+
   let msg="ELECTRIC.ASSEM REPORT\n";
-  fields.forEach(([k,v])=>msg+=`${k}: ${data[v]||"-"}\n`);
+  fields.forEach(([k,v])=>msg+=`${k}: ${data?.[v] || "-"}\n`);
   msg+="FAULT DESCRIPTION:\n"+fault;
+
   window.open("https://wa.me/"+WHATSAPP_NUMBER+"?text="+encodeURIComponent(msg));
 };
-</script>
-<script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxK9K4ZEmasLuDGu2_oXTqKxZc1102qJxEo8WR2Asib4R7OyWvlf7l-X_bJ7e8spHwB/exec";
 
-const params = new URLSearchParams(window.location.search);
-const id = params.get("id");
+/* ========= Load logic =========
+   1) if URL has ?id= -> fetch from Apps Script and render (fixed data)
+   2) else -> render from sessionStorage (coming directly from index confirm)
+*/
+(async function init(){
+  const params = new URLSearchParams(window.location.search);
+  const id = (params.get("id") || "").trim();
 
-if(!id){
-  alert("لا يوجد رقم تقرير");
-}
+  if(id){
+    try{
+      const res = await fetch(API_URL + "?id=" + encodeURIComponent(id));
+      const json = await res.json();
 
-fetch(API_URL + "?id=" + id)
-  .then(res => res.json())
-  .then(json => {
-    if(!json.ok){
-      alert("التقرير غير موجود");
+      if(!json.ok){
+        alert("التقرير غير موجود");
+        return;
+      }
+
+      // ✅ keep a copy for WhatsApp / fallback
+      window.__REPORT_DATA__ = json.data;
+      sessionStorage.setItem("assem_report_data", JSON.stringify(json.data));
+
+      renderFields(json.data);
+      showImg(mainImg, imgPh, json.data.imageDataUrl || "");
+      showVid(vid, vidPh, json.data.videoUrl || "");
+
+      return;
+    }catch(err){
+      alert("حصل خطأ في تحميل التقرير");
       return;
     }
+  }
 
-    sessionStorage.setItem(
-      "assem_report_data",
-      JSON.stringify(json.data)
-    );
+  // no id => try sessionStorage
+  const data = JSON.parse(sessionStorage.getItem('assem_report_data') || "{}");
+  if(!Object.keys(data).length){
+    alert("لا يوجد بيانات تقرير (افتحه من QR أو من index)");
+    return;
+  }
 
-    location.reload();
-  });
+  window.__REPORT_DATA__ = data;
+  renderFields(data);
+  showImg(mainImg, imgPh, data.imageDataUrl || "");
+  showVid(vid, vidPh, data.videoUrl || "");
+})();
 </script>
+
 </body>
 </html>
