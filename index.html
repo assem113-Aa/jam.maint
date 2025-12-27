@@ -862,11 +862,14 @@ rotRBtn.onclick = () => { if(cropper) cropper.rotate(90); };
   const confirmBtn = document.getElementById('confirmBtn');
   if (!confirmBtn) return;
 
-  confirmBtn.addEventListener('click', function () {
-    const data = collectFormData();
-    sessionStorage.setItem('assem_report_data', JSON.stringify(data));
-    window.location.href = 'report.html';
-  });
+  confirmBtn.addEventListener('click', async function () {
+  const data = collectFormData();
+
+  // ✅ ابعت البيانات للـ Google Apps Script
+  await submitReport(data);
+
+  // ⚠️ مش هنروح report.html هنا، لأن submitReport هيعمل QR ويطلع ID
+});
 
   function collectFormData(){
     const getVal = (id) => (document.getElementById(id)?.value || '');
